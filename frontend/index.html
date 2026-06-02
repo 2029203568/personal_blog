@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>于洋洋 · 技术博客</title>
+    <meta name="description" content="逆向爬虫 / 全栈自动化工程师。Web 逆向、大规模数据采集、RPA 自动化、风控对抗。" />
+    <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+    <div class="landing-page">
+        <header>
+            <div style="display: flex; align-items: center;">
+                <a href="/" class="brand" id="brandLogo"></a>
+                <a href="#skills" class="nav-link">技能栈</a>
+                <a href="#domain-1" class="nav-link nav-link-secondary">服务领域</a>
+            </div>
+            <div class="header-buttons">
+                <button class="btn-primary" id="contactBtn">联系我</button>
+            </div>
+        </header>
+
+        <section class="hero" id="hero">
+            <div class="bg-grid"></div>
+            <h1 id="heroTitle">
+                <span id="titlePrefix"></span><span id="gradientWord" class="gradient-word"></span><span class="cursor" id="titleCursor"></span>
+            </h1>
+            <p class="subtitle" id="heroSubtitle"><span id="subtitleText"></span><span class="cursor" id="subtitleCursor"></span></p>
+            <p class="description" id="heroDesc"></p>
+            <div class="cta-group" id="heroCta">
+                <button class="cta-btn" id="ctaBtn">查看项目成果</button>
+            </div>
+            <div class="scroll-indicator" id="scrollIndicator">
+                <div class="mouse"><div class="mouse-wheel"></div></div>
+                <span>向下滚动</span>
+            </div>
+        </section>
+
+        <nav class="side-nav" id="sideNav"></nav>
+
+        <section class="stats-section" id="stats">
+            <div class="stats-grid" id="statsGrid"></div>
+        </section>
+
+        <section class="skills-section" id="skills">
+            <div class="section-header">
+                <div class="section-label">技术栈</div>
+                <h2 class="section-title">我掌握的<span>核心技术</span></h2>
+            </div>
+            <div class="skills-grid" id="skillsGrid"></div>
+        </section>
+
+        <section class="pain-section">
+            <div class="pain-header">
+                <div class="pain-label">服务领域</div>
+                <h2 class="pain-title">解决<span>哪些领域</span>的问题</h2>
+            </div>
+            <div class="pain-items" id="domainItems"></div>
+        </section>
+
+        <section class="projects-section" id="projects">
+            <div class="section-header">
+                <div class="section-label">项目成果</div>
+                <h2 class="section-title">真实交付的<span>项目案例</span></h2>
+            </div>
+            <div class="projects-grid" id="projectsGrid"></div>
+        </section>
+
+        <footer>
+            <div class="footer-contact" id="footerContact"></div>
+            <div class="footer-links">
+                <a href="#skills">技能栈</a>
+                <a href="#domain-1">服务领域</a>
+                <a href="#projects">项目成果</a>
+            </div>
+            <div class="footer-copy" id="footerCopy"></div>
+        </footer>
+    </div>
+
+    <canvas id="particleCanvas"></canvas>
+
+    <div class="contact-modal" id="contactModal" aria-hidden="true">
+        <div class="contact-modal-backdrop" id="contactModalBackdrop"></div>
+        <div class="contact-modal-panel" role="dialog" aria-labelledby="contactModalTitle">
+            <button class="contact-modal-close" id="contactModalClose" aria-label="关闭">×</button>
+            <h2 class="contact-modal-title" id="contactModalTitle">联系我</h2>
+            <div class="contact-modal-body" id="contactModalBody"></div>
+        </div>
+    </div>
+
+    <script type="module" src="/js/main.js"></script>
+</body>
+</html>
