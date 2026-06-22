@@ -95,6 +95,16 @@ def has_changes() -> bool:
     return bool(status)
 
 
+def git_push(remote_url: str, branch: str, token: str) -> None:
+    """推送时禁用 Windows 凭据缓存，改用 Bearer Token（兼容 fine-grained PAT）。"""
+    cmd = ["git", "-c", "credential.helper="]
+    if token:
+        cmd.extend(["-c", f"http.extraHeader=Authorization: Bearer {token}"])
+    cmd.extend(["push", "-u", remote_url, f"HEAD:{branch}"])
+    hint = " (GITHUB_TOKEN Bearer)" if token else ""
+    run(cmd, echo=f"git push -u {remote_url} HEAD:{branch}{hint}")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="推送 elphant-route 到 GitHub")
     parser.add_argument("--remote", default=os.environ.get("GITHUB_REMOTE", DEFAULT_REMOTE))
@@ -129,14 +139,10 @@ def main() -> None:
         print("\n已跳过 push（--skip-push）。")
         return
 
-    push_target = args.remote
     token = os.environ.get("GITHUB_TOKEN", "").strip()
-    if token and push_target.startswith("https://"):
-        push_target = push_target.replace("https://", f"https://{token}@", 1)
-    run(
-        ["git", "push", "-u", push_target, f"HEAD:{args.branch}"],
-        echo=f"git push -u {args.remote} HEAD:{args.branch}  (使用 GITHUB_TOKEN)",
-    )
+    if not token:
+        print("警告: 未设置 GITHUB_TOKEN，将使用系统已保存的 Git 凭据。")
+    git_push(args.remote, args.branch, token)
     print(f"\n完成: {args.remote} (分支 {args.branch})")
 
 
@@ -145,10 +151,17 @@ if __name__ == "__main__":
         main()
     except subprocess.CalledProcessError as exc:
         print(f"\nGit 命令失败 (exit {exc.returncode})。")
-        if not os.environ.get("GITHUB_TOKEN"):
+        if exc.returncode == 128 or "403" in str(exc):
             print(
-                "提示: 若 HTTPS 推送要求登录，请设置 Personal Access Token:\n"
-                "  PowerShell: $env:GITHUB_TOKEN=\"ghp_你的token\"\n"
+                "403 常见原因:\n"
+                "  1. Token 未勾选仓库 2029203568/- 的 Contents 读写权限\n"
+                "  2. Windows 缓存了旧密码 — 打开「凭据管理器」删除 git:https://github.com\n"
+                "  3. Token 已过期或被撤销 — 重新生成后: $env:GITHUB_TOKEN=\"新token\""
+            )
+        elif not os.environ.get("GITHUB_TOKEN"):
+            print(
+                "提示: 请设置 Personal Access Token:\n"
+                "  PowerShell: $env:GITHUB_TOKEN=\"ghp_或_github_pat_...\"\n"
                 "  然后重新运行本脚本。"
             )
         sys.exit(exc.returncode)
