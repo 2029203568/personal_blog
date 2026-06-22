@@ -105,6 +105,7 @@ python3 scripts/check_video_streaming.py --url http://127.0.0.1:8000/assets/vide
 | `POST /api/progress` | 访客进度上报（公开） |
 
 默认账号已写在 `backend/auth.py`；如需覆盖可设置 `ADMIN_USERNAME`、`ADMIN_PASSWORD` 环境变量。
+默认账号密码为admin
 
 命令行统计：
 
