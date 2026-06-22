@@ -39,8 +39,8 @@ BLOCKED_TRACKED = (
 )
 
 
-def run(cmd: list[str], *, cwd: Path = PROJECT_ROOT, check: bool = True) -> subprocess.CompletedProcess:
-    print("+", " ".join(cmd))
+def run(cmd: list[str], *, cwd: Path = PROJECT_ROOT, check: bool = True, echo: str | None = None) -> subprocess.CompletedProcess:
+    print("+", echo if echo is not None else " ".join(cmd))
     return subprocess.run(cmd, cwd=str(cwd), check=check, text=True)
 
 
@@ -133,7 +133,10 @@ def main() -> None:
     token = os.environ.get("GITHUB_TOKEN", "").strip()
     if token and push_target.startswith("https://"):
         push_target = push_target.replace("https://", f"https://{token}@", 1)
-    run(["git", "push", "-u", push_target, f"HEAD:{args.branch}"])
+    run(
+        ["git", "push", "-u", push_target, f"HEAD:{args.branch}"],
+        echo=f"git push -u {args.remote} HEAD:{args.branch}  (使用 GITHUB_TOKEN)",
+    )
     print(f"\n完成: {args.remote} (分支 {args.branch})")
 
 
