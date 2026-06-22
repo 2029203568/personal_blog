@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>真实案例 · 于洋洋</title>
+    <meta name="description" content="MVP 可行性验证，您有想法我们给结果。100+ 真实市场需求案例。" />
+    <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+    <div class="landing-page cases-page">
+        <header>
+            <div class="header-nav">
+                <a href="/" class="brand" id="brandLogo"></a>
+                <a href="/#skills" class="nav-link">技能栈</a>
+                <a href="/#domain-1" class="nav-link nav-link-secondary">服务领域</a>
+                <a href="/cases" class="nav-link nav-link-active">真实案例</a>
+            </div>
+            <div class="header-buttons">
+                <button class="btn-primary" id="contactBtn">联系我</button>
+            </div>
+        </header>
+
+        <section class="cases-concept-hero" id="casesConceptHero">
+            <div class="bg-grid"></div>
+            <div class="cases-concept-inner">
+                <div class="cases-concept-label" id="casesConceptLabel"></div>
+                <h1 class="cases-concept-title" id="casesConceptTitle">
+                    <span id="casesTitlePrefix"></span><span id="casesTitleHighlight" class="gradient-word"></span><span id="casesTitleSuffix"></span>
+                </h1>
+                <p class="cases-concept-tagline" id="casesConceptTagline"></p>
+                <p class="cases-concept-desc" id="casesConceptDesc"></p>
+                <div class="cases-concept-stats" id="casesConceptStats"></div>
+                <div class="cases-pillars" id="casesPillars"></div>
+            </div>
+            <div class="scroll-indicator cases-scroll-indicator" id="casesScrollIndicator">
+                <div class="mouse"><div class="mouse-wheel"></div></div>
+                <span>查看真实案例</span>
+            </div>
+        </section>
+
+        <section class="cases-gallery-section" id="casesGallery">
+            <div class="cases-gallery-header section-header">
+                <div class="section-label" id="galleryLabel"></div>
+                <h2 class="section-title" id="galleryTitle"></h2>
+                <p class="cases-gallery-desc" id="galleryDesc"></p>
+                <p class="cases-count" id="casesCount"></p>
+            </div>
+            <div class="cases-groups" id="casesGroups"></div>
+        </section>
+
+        <section class="cases-cta-section" id="casesCta">
+            <div class="cases-cta-inner">
+                <h2 class="cases-cta-title" id="casesCtaTitle"></h2>
+                <p class="cases-cta-desc" id="casesCtaDesc"></p>
+                <button class="cases-cta-btn" id="casesCtaBtn" type="button"></button>
+            </div>
+        </section>
+
+        <footer>
+            <div class="footer-contact" id="footerContact"></div>
+            <div class="footer-links">
+                <a href="/">首页</a>
+                <a href="/#skills">技能栈</a>
+                <a href="/#projects">项目成果</a>
+                <a href="/cases">真实案例</a>
+            </div>
+            <div class="footer-copy" id="footerCopy"></div>
+        </footer>
+    </div>
+
+    <div class="lightbox" id="lightbox" aria-hidden="true">
+        <div class="lightbox-backdrop" id="lightboxBackdrop"></div>
+        <div class="lightbox-panel">
+            <button class="lightbox-close" id="lightboxClose" aria-label="关闭">×</button>
+            <button class="lightbox-nav lightbox-prev" id="lightboxPrev" aria-label="上一张">‹</button>
+            <img class="lightbox-img" id="lightboxImg" alt="" />
+            <button class="lightbox-nav lightbox-next" id="lightboxNext" aria-label="下一张">›</button>
+            <div class="lightbox-caption" id="lightboxCaption"></div>
+        </div>
+    </div>
+
+    <div class="contact-modal" id="contactModal" aria-hidden="true">
+        <div class="contact-modal-backdrop" id="contactModalBackdrop"></div>
+        <div class="contact-modal-panel" role="dialog" aria-labelledby="contactModalTitle">
+            <button class="contact-modal-close" id="contactModalClose" aria-label="关闭">×</button>
+            <h2 class="contact-modal-title" id="contactModalTitle">联系我</h2>
+            <div class="contact-modal-body" id="contactModalBody"></div>
+        </div>
+    </div>
+
+    <script type="module" src="/js/cases.js"></script>
+</body>
+</html>

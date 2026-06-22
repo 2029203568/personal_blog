@@ -1,0 +1,7 @@
+# 复制为 config.ini 并填写 authtoken（或在 natapp.cn 后台复制）
+# 免费 Web 隧道默认本地端口为 80（Windows）或 8000（Linux），须与 start_natapp 中 LOCAL_PORT 一致
+
+[default]
+authtoken=你的authtoken
+log=stdout
+loglevel=INFO

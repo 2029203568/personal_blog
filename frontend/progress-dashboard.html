@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>浏览进度统计 · 于洋洋</title>
+    <link rel="stylesheet" href="/css/auth.css" />
+    <style>
+        body.dashboard-page {
+            background: var(--er-bg, #f7f8fb);
+            color: var(--er-text, #333639);
+        }
+        .dashboard-wrap {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 28px 16px 48px;
+        }
+        .dashboard-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .dashboard-header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+        .dashboard-meta {
+            margin: 6px 0 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .dashboard-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .dashboard-actions span {
+            font-size: 0.88rem;
+            color: #666;
+        }
+        .btn-link, .btn-outline {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 34px;
+            padding: 0 14px;
+            border-radius: 6px;
+            font-size: 0.88rem;
+            text-decoration: none;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+        .btn-link {
+            background: var(--er-primary, #D34947);
+            color: #fff;
+        }
+        .btn-link:hover { background: var(--er-primary-hover, #DC6A68); }
+        .btn-outline {
+            background: #fff;
+            color: var(--er-text, #333639);
+            border-color: var(--er-border, #e0e0e6);
+        }
+        .btn-outline:hover { border-color: var(--er-primary-hover, #DC6A68); color: var(--er-primary, #D34947); }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 16px;
+            box-shadow: 0 1px 4px rgba(0,0,0,.08);
+            border: 1px solid rgb(239, 239, 245);
+        }
+        .card .value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--er-primary, #D34947);
+        }
+        .card .label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 4px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 1px 4px rgba(0,0,0,.08);
+            border: 1px solid rgb(239, 239, 245);
+        }
+        th, td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9rem;
+        }
+        th { background: #fafafa; font-weight: 600; }
+        section { margin-bottom: 28px; }
+        section h2 { font-size: 1.1rem; margin-bottom: 12px; }
+        .err {
+            color: #b42318;
+            padding: 16px;
+            background: #fdecea;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body class="dashboard-page">
+    <div class="dashboard-wrap">
+        <div class="dashboard-header">
+            <div>
+                <h1>浏览进度统计</h1>
+                <p class="dashboard-meta">数据来源 <code>backend/logs/progress.json</code></p>
+            </div>
+            <div class="dashboard-actions">
+                <span id="adminUser"></span>
+                <a href="/" class="btn-outline">返回首页</a>
+                <button type="button" class="btn-outline" id="logoutBtn">退出登录</button>
+            </div>
+        </div>
+        <div id="root">加载中…</div>
+    </div>
+    <script type="module">
+        const LOGIN_URL = '/admin/login?next=/progress-dashboard';
+
+        function redirectLogin() {
+            window.location.replace(LOGIN_URL);
+        }
+
+        async function ensureAuth() {
+            const res = await fetch('/api/admin/me', { credentials: 'include' });
+            if (res.status === 401) {
+                redirectLogin();
+                return null;
+            }
+            if (!res.ok) throw new Error('无法验证登录状态');
+            const data = await res.json();
+            document.getElementById('adminUser').textContent = data.username ? `@${data.username}` : '';
+            return data;
+        }
+
+        async function fetchAuthed(path) {
+            const res = await fetch(path, { credentials: 'include' });
+            if (res.status === 401) {
+                redirectLogin();
+                return null;
+            }
+            if (!res.ok) throw new Error(`请求失败: ${path}`);
+            return res.json();
+        }
+
+        document.getElementById('logoutBtn')?.addEventListener('click', async () => {
+            await fetch('/api/admin/logout', { method: 'POST', credentials: 'include' });
+            redirectLogin();
+        });
+
+        function render(stats, records) {
+            const topSections = (stats.top_sections || [])
+                .map((s) => `<tr><td>${s.section}</td><td>${s.count}</td></tr>`)
+                .join('') || '<tr><td colspan="2">暂无数据</td></tr>';
+
+            const videoRows = Object.entries(stats.video_milestones || {})
+                .map(([vid, milestones]) => {
+                    const cells = [25, 50, 75, 100]
+                        .map((p) => milestones[String(p)] || 0)
+                        .join(' / ');
+                    return `<tr><td>${vid}</td><td>${cells}</td></tr>`;
+                })
+                .join('') || '<tr><td colspan="2">暂无视频进度</td></tr>';
+
+            const recentRows = records.slice().reverse()
+                .map((r) => `<tr>
+                    <td>${r.ended_at || r.started_at || '-'}</td>
+                    <td>${r.page || r.path}</td>
+                    <td>${r.max_scroll_pct ?? 0}%</td>
+                    <td>${(r.sections_viewed || []).join(', ') || '-'}</td>
+                    <td>${r.deepest_section || '-'}</td>
+                </tr>`)
+                .join('') || '<tr><td colspan="5">暂无记录</td></tr>';
+
+            return `
+                <div class="grid">
+                    <div class="card"><div class="value">${stats.total_sessions ?? 0}</div><div class="label">总会话数</div></div>
+                    <div class="card"><div class="value">${stats.avg_scroll_pct ?? 0}%</div><div class="label">平均滚动深度</div></div>
+                    <div class="card"><div class="value">${stats.video_completion_rate ?? 0}%</div><div class="label">视频完播率（至少触达 100%）</div></div>
+                    <div class="card"><div class="value">${stats.video_started_count ?? 0}</div><div class="label">有播放进度的视频数</div></div>
+                </div>
+                <section>
+                    <h2>最常浏览区块</h2>
+                    <table><thead><tr><th>区块</th><th>曝光次数</th></tr></thead><tbody>${topSections}</tbody></table>
+                </section>
+                <section>
+                    <h2>视频进度（25 / 50 / 75 / 100 触达次数）</h2>
+                    <table><thead><tr><th>视频 ID</th><th>里程碑</th></tr></thead><tbody>${videoRows}</tbody></table>
+                </section>
+                <section>
+                    <h2>最近 20 条会话</h2>
+                    <table>
+                        <thead><tr><th>时间</th><th>页面</th><th>滚动</th><th>已看区块</th><th>最深区块</th></tr></thead>
+                        <tbody>${recentRows}</tbody>
+                    </table>
+                </section>
+            `;
+        }
+
+        async function load() {
+            const root = document.getElementById('root');
+            try {
+                const authed = await ensureAuth();
+                if (!authed) return;
+
+                const [stats, progressData] = await Promise.all([
+                    fetchAuthed('/api/progress/stats'),
+                    fetchAuthed('/api/progress?limit=20'),
+                ]);
+                if (!stats || !progressData) return;
+                root.innerHTML = render(stats, progressData.records || []);
+            } catch (err) {
+                root.innerHTML = `<div class="err">加载失败：${err.message}</div>`;
+            }
+        }
+
+        load();
+    </script>
+</body>
+</html>

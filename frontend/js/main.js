@@ -5,7 +5,9 @@ import { ScrollToPlugin } from 'https://cdn.jsdelivr.net/npm/gsap@3.12.5/ScrollT
 
 gsap.registerPlugin(ScrollTrigger, TextPlugin, ScrollToPlugin);
 
-const API_BASE = '';
+import { initProgressTracker, trackProgressEvent } from './progress-tracker.js';
+
+const INDEX_SECTIONS = ['hero', 'stats', 'skills', 'domain-1', 'projects', 'process'];
 
 const DOMAIN_GRADIENTS = [
     'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -15,8 +17,10 @@ const DOMAIN_GRADIENTS = [
 ];
 
 async function fetchLanding() {
-    const res = await fetch(`${API_BASE}/api/landing`);
-    if (!res.ok) throw new Error('Failed to load landing data');
+    const res = await fetch('/api/landing');
+    if (!res.ok) {
+        throw new Error(`接口 /api/landing 返回 ${res.status}，请确认 Nginx 已将 /api/ 反代到后端 8000 端口`);
+    }
     return res.json();
 }
 
@@ -70,10 +74,25 @@ function renderProjects(items) {
             <div class="project-highlight">${item.highlight}</div>
             <h3 class="project-title">${item.title}</h3>
             <span class="project-period">${item.period}</span>
+            <p class="project-result">${item.result || ''}</p>
+            <p class="project-client">服务：${item.client || '企业客户'}</p>
             <p class="project-desc">${item.description}</p>
+            ${item.demo_video || item.demo_anchor ? `
+                <a class="project-demo-link" href="/cases#cases-${item.demo_anchor || 'demo-videos'}">查看演示视频 →</a>
+            ` : ''}
             <div class="project-tags">
                 ${item.tags.map((tag) => `<span>${tag}</span>`).join('')}
             </div>
+        </div>
+    `).join('');
+}
+
+function renderProcess(process) {
+    return process.steps.map((step) => `
+        <div class="process-step-card">
+            <div class="process-step-num">${step.step}</div>
+            <h3>${step.title}</h3>
+            <p>${step.description}</p>
         </div>
     `).join('');
 }
@@ -132,6 +151,7 @@ function initContactModal(contact) {
         modal.classList.add('open');
         modal.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
+        trackProgressEvent('contact_modal_open');
         gsap.fromTo('.contact-modal-panel', { y: 30, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.35, ease: 'power3.out' });
         gsap.fromTo('.contact-modal-backdrop', { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.25 });
     };
@@ -167,14 +187,20 @@ function initContactModal(contact) {
 function initHeroAnimations(hero) {
     const titlePrefix = document.getElementById('titlePrefix');
     const gradientWord = document.getElementById('gradientWord');
+    const heroPositioning = document.getElementById('heroPositioning');
     const heroSubtitle = document.getElementById('heroSubtitle');
     const heroDesc = document.getElementById('heroDesc');
     const heroCta = document.getElementById('heroCta');
     const titleCursor = document.getElementById('titleCursor');
     const subtitleCursor = document.getElementById('subtitleCursor');
 
-    gsap.set([heroSubtitle, heroDesc, heroCta], { autoAlpha: 0 });
+    if (heroPositioning && hero.positioning) {
+        heroPositioning.textContent = hero.positioning;
+    }
+
+    gsap.set([heroPositioning, heroSubtitle, heroDesc, heroCta], { autoAlpha: 0 });
     gsap.set(heroCta, { y: 15 });
+    if (heroPositioning) gsap.set(heroPositioning, { y: 10 });
 
     const tl = gsap.timeline({ delay: 0.3 });
 
@@ -191,6 +217,12 @@ function initHeroAnimations(hero) {
         .to(titleCursor, {
             opacity: 0,
             duration: 0.2,
+        })
+        .to(heroPositioning, {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.6,
+            ease: 'power2.out',
         })
         .set(heroSubtitle, { autoAlpha: 1 })
         .to('#subtitleText', {
@@ -333,6 +365,32 @@ function initScrollAnimations() {
             });
         },
     });
+
+    gsap.from('.process-section .section-header > *', {
+        scrollTrigger: {
+            trigger: '.process-section',
+            start: 'top 80%',
+        },
+        y: 40,
+        autoAlpha: 0,
+        duration: 0.8,
+        stagger: 0.12,
+        ease: 'power3.out',
+    });
+
+    ScrollTrigger.batch('.process-step-card', {
+        start: 'top 90%',
+        onEnter: (batch) => {
+            gsap.from(batch, {
+                y: 30,
+                autoAlpha: 0,
+                duration: 0.7,
+                stagger: 0.12,
+                ease: 'power3.out',
+                overwrite: true,
+            });
+        },
+    });
 }
 
 function initScrollIndicator() {
@@ -379,7 +437,7 @@ function initScrollIndicator() {
     });
 }
 
-function initSideNav() {
+function initSideNav(progress) {
     const sideNav = document.getElementById('sideNav');
     const navLinks = sideNav?.querySelectorAll('a') ?? [];
 
@@ -403,12 +461,14 @@ function initSideNav() {
                 if (self.isActive) {
                     navLinks.forEach((l) => l.classList.remove('active'));
                     link.classList.add('active');
+                    progress?.trackSectionView(sectionId);
                 }
             },
         });
 
         link.addEventListener('click', (e) => {
             e.preventDefault();
+            progress?.trackEvent('nav_click', { section: sectionId });
             gsap.to(window, {
                 duration: 1,
                 scrollTo: { y: target, autoKill: false },
@@ -427,8 +487,9 @@ function initHeaderAnimations() {
     });
 }
 
-function bindButtons() {
+function bindButtons(progress) {
     const scrollToProjects = () => {
+        progress?.trackEvent('cta_click', { target: 'projects' });
         gsap.to(window, {
             duration: 1,
             scrollTo: { y: '#projects', autoKill: false },
@@ -443,6 +504,7 @@ function bindButtons() {
             const href = link.getAttribute('href');
             if (href?.startsWith('#')) {
                 e.preventDefault();
+                progress?.trackEvent('nav_click', { target: href.slice(1) });
                 gsap.to(window, {
                     duration: 1,
                     scrollTo: { y: href, autoKill: false },
@@ -454,6 +516,8 @@ function bindButtons() {
 }
 
 async function init() {
+    const progress = initProgressTracker({ page: 'index', path: '/', sections: INDEX_SECTIONS });
+
     const data = await fetchLanding();
 
     const brandEl = document.getElementById('brandLogo');
@@ -467,6 +531,16 @@ async function init() {
     document.getElementById('skillsGrid').innerHTML = renderSkills(data.skills);
     document.getElementById('domainItems').innerHTML = renderDomains(data.domains);
     document.getElementById('projectsGrid').innerHTML = renderProjects(data.projects);
+    if (data.projects_section?.intro) {
+        document.getElementById('projectsIntro').textContent = data.projects_section.intro;
+    }
+    if (data.process) {
+        document.getElementById('processLabel').textContent = data.process.label;
+        document.getElementById('processTitle').innerHTML =
+            `${data.process.title_before}<span>${data.process.title_highlight}</span>`;
+        document.getElementById('processNote').textContent = data.process.note;
+        document.getElementById('processSteps').innerHTML = renderProcess(data.process);
+    }
     document.getElementById('sideNav').innerHTML = renderSideNav(data.side_nav);
     document.getElementById('footerContact').innerHTML = renderContact(data.contact);
     document.getElementById('footerCopy').textContent = data.site.copyright;
@@ -476,8 +550,8 @@ async function init() {
     initHeroAnimations(data.hero);
     initScrollAnimations();
     initScrollIndicator();
-    initSideNav();
-    bindButtons();
+    initSideNav(progress);
+    bindButtons(progress);
     initContactModal(data.contact);
 
     ScrollTrigger.refresh();
@@ -485,5 +559,7 @@ async function init() {
 
 init().catch((err) => {
     console.error(err);
-    document.body.innerHTML = '<p style="padding:40px;color:red;">页面加载失败，请确认后端服务已启动。</p>';
+    const detail = err && err.message ? `<br><small style="color:#666;">${err.message}</small>` : '';
+    document.body.innerHTML =
+        `<p style="padding:40px;color:red;">页面加载失败，请确认后端服务已启动。${detail}</p>`;
 });

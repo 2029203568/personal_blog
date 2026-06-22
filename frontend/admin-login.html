@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>登录 · 浏览统计后台</title>
+    <meta name="description" content="登录后查看网站浏览进度统计" />
+    <link rel="stylesheet" href="/css/auth.css" />
+</head>
+<body class="er-auth-page er-auth-login">
+    <div class="er-auth-shell">
+        <section id="er-auth-visual" class="er-auth-visual" aria-label="品牌介绍">
+            <p class="er-auth-kicker">Elephant Route</p>
+            <h1 class="er-auth-title">数据洞察，尽在掌握</h1>
+            <p class="er-auth-subtitle">登录后台查看访客滚动深度、区块曝光与视频播放进度。</p>
+            <div class="er-auth-art" aria-hidden="true" id="erAuthArt">
+                <span class="er-auth-mark er-auth-character">
+                    <i class="er-auth-eye er-auth-eye-left"><b></b></i>
+                    <i class="er-auth-eye er-auth-eye-right"><b></b></i>
+                </span>
+                <span class="er-auth-device er-auth-device-one er-auth-character">
+                    <i class="er-auth-eye er-auth-eye-left"><b></b></i>
+                    <i class="er-auth-eye er-auth-eye-right"><b></b></i>
+                </span>
+                <span class="er-auth-device er-auth-device-two er-auth-character">
+                    <i class="er-auth-eye er-auth-eye-left"><b></b></i>
+                    <i class="er-auth-eye er-auth-eye-right"><b></b></i>
+                </span>
+                <span class="er-auth-device er-auth-device-three er-auth-character">
+                    <i class="er-auth-eye er-auth-eye-left"><b></b></i>
+                    <i class="er-auth-eye er-auth-eye-right"><b></b></i>
+                    <span class="er-auth-mouth"></span>
+                </span>
+            </div>
+        </section>
+
+        <div class="er-auth-panel-wrap">
+            <div class="er-auth-card">
+                <div class="er-auth-form-copy">
+                    <a class="er-auth-brand-row" href="/" aria-label="返回网站首页">
+                        <span class="er-auth-logo" id="erAuthLogo">于</span>
+                        <span>
+                            <strong class="er-auth-brand-name">于洋洋 · 技术博客</strong>
+                            <small class="er-auth-brand-meta">Elephant Route</small>
+                        </span>
+                    </a>
+                    <p class="er-auth-form-kicker">欢迎回来</p>
+                    <h2 class="er-auth-form-title">浏览统计后台</h2>
+                    <p class="er-auth-form-subtitle">登录后查看 progress 数据与汇总报表</p>
+                </div>
+
+                <form class="er-auth-form-body" id="loginForm" autocomplete="on">
+                    <div class="er-auth-error" id="loginError" role="alert"></div>
+                    <div class="er-auth-field">
+                        <label for="username">账号</label>
+                        <input
+                            id="username"
+                            name="username"
+                            class="er-auth-input"
+                            type="text"
+                            placeholder="管理员账号"
+                            maxlength="64"
+                            autocomplete="username"
+                            required
+                            autofocus
+                        />
+                    </div>
+                    <div class="er-auth-field">
+                        <label for="password">密码</label>
+                        <input
+                            id="password"
+                            name="password"
+                            class="er-auth-input"
+                            type="password"
+                            placeholder="密码"
+                            maxlength="128"
+                            autocomplete="current-password"
+                            required
+                        />
+                    </div>
+                    <button type="submit" class="er-auth-submit" id="loginBtn">
+                        <span aria-hidden="true">→</span>
+                        <span>登入</span>
+                    </button>
+                </form>
+
+                <div class="er-auth-footer">
+                    <a href="/">返回网站首页</a>
+                    <span>浏览进度管理</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <canvas id="ripple-canvas" aria-hidden="true"></canvas>
+    <script type="module" src="/js/auth-login.js"></script>
+</body>
+</html>

@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>于洋洋 · 技术博客</title>
+    <title>洋洋 · 技术博客</title>
     <meta name="description" content="逆向爬虫 / 全栈自动化工程师。Web 逆向、大规模数据采集、RPA 自动化、风控对抗。" />
     <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
     <div class="landing-page">
         <header>
-            <div style="display: flex; align-items: center;">
+            <div class="header-nav">
                 <a href="/" class="brand" id="brandLogo"></a>
                 <a href="#skills" class="nav-link">技能栈</a>
                 <a href="#domain-1" class="nav-link nav-link-secondary">服务领域</a>
+                <a href="/cases" class="nav-link">真实案例</a>
             </div>
             <div class="header-buttons">
                 <button class="btn-primary" id="contactBtn">联系我</button>
@@ -25,6 +26,7 @@
             <h1 id="heroTitle">
                 <span id="titlePrefix"></span><span id="gradientWord" class="gradient-word"></span><span class="cursor" id="titleCursor"></span>
             </h1>
+            <p class="hero-positioning" id="heroPositioning"></p>
             <p class="subtitle" id="heroSubtitle"><span id="subtitleText"></span><span class="cursor" id="subtitleCursor"></span></p>
             <p class="description" id="heroDesc"></p>
             <div class="cta-group" id="heroCta">
@@ -62,8 +64,18 @@
             <div class="section-header">
                 <div class="section-label">项目成果</div>
                 <h2 class="section-title">真实交付的<span>项目案例</span></h2>
+                <p class="section-intro" id="projectsIntro"></p>
             </div>
             <div class="projects-grid" id="projectsGrid"></div>
+        </section>
+
+        <section class="process-section" id="process">
+            <div class="section-header">
+                <div class="section-label" id="processLabel"></div>
+                <h2 class="section-title" id="processTitle"></h2>
+                <p class="section-intro" id="processNote"></p>
+            </div>
+            <div class="process-steps" id="processSteps"></div>
         </section>
 
         <footer>
@@ -72,6 +84,8 @@
                 <a href="#skills">技能栈</a>
                 <a href="#domain-1">服务领域</a>
                 <a href="#projects">项目成果</a>
+                <a href="#process">合作流程</a>
+                <a href="/cases">真实案例</a>
             </div>
             <div class="footer-copy" id="footerCopy"></div>
         </footer>

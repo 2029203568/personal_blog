@@ -5,3 +5,20 @@ venv/
 .env
 *.log
 .DS_Store
+
+# 访问日志（含访客 IP，勿提交到公开仓库）
+backend/logs/*
+!backend/logs/.gitkeep
+
+# 资源同步记录为本地/服务器运行时生成，无需入库
+frontend/assets/videos/资源同步记录.md
+frontend/assets/videos/.deploy-ready.json
+natapp/natapp.exe
+natapp/natapp
+natapp/config.ini
+natapp/*.log
+natapp/run_natapp.bat
+natapp/run_natapp.sh
+
+# HLS 切片（体积大，在服务器用 scripts/transcode_video.py 生成）
+frontend/assets/videos/**/*.ts
