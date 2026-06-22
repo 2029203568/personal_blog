@@ -1,4 +1,4 @@
-# 于洋洋 · 技术博客
+# 洋洋 · 技术博客
 
 FastAPI + 静态前端，支持 Windows / Linux 部署。
 
