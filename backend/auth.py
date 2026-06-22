@@ -36,9 +36,9 @@ def _secret_bytes() -> bytes:
     SECRET_FILE.write_text(key, encoding="utf-8")
     return key.encode("utf-8")
 
-
-DEFAULT_ADMIN_USERNAME = "15204959246"
-DEFAULT_ADMIN_PASSWORD = "yuyang907017"
+#管理页面账号密码设置
+DEFAULT_ADMIN_USERNAME = "admin"
+DEFAULT_ADMIN_PASSWORD = "admin"
 
 
 def admin_credentials() -> tuple[str, str]:
