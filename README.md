@@ -62,7 +62,7 @@ python3 scripts/sync_code.py
 | `TRANSCODE_HLS` | `1` 完整 HLS 转码（首部署较慢） | - |
 | `AUTO_HLS` | `1` 且无 HLS 时自动转码（Linux） | - |
 | `CREATE_VENV` | `1` 自动创建 `.venv` | - |
-| `ADMIN_USERNAME` | 统计后台登录账号 | `15204959246` |
+| `ADMIN_USERNAME` | 统计后台登录账号 | `admin` |
 | `ADMIN_PASSWORD` | 统计后台登录密码 | 见 `backend/auth.py` 默认值 |
 | `ADMIN_SECRET` | 会话签名密钥（生产务必修改） | 自动生成到 `backend/logs/.admin_secret` |
 | `ADMIN_SESSION_HOURS` | 登录会话有效期（小时） | `168` |
